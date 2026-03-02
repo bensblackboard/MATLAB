@@ -8,7 +8,7 @@ function y = unit2unit(value,init_unit,fin_unit)
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 % Created by: Benjamin Van Schaick
 % Date Modified: 3/2/2026
-% Version: 1.0.2
+% Version: 1.0.3
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 % Physical constants defined by SI
@@ -23,8 +23,15 @@ fin_unit = unitParse(fin_unit);
 if isequal(init_unit,'Hertz') && isequal(fin_unit,'wavenumber')
     y = (1/(100*c))*value;
 elseif isequal(init_unit,'Hex') && isequal(fin_unit,'RGB')
-    if isequal(class(value),'string')
+    if isequal(class(value),'char')
+        if isequal(value(1),'#')
+            value(1) = [];
+        end
+    elseif isequal(class(value),'string')
         value = char(value);
+        if isequal(value(1),'#')
+            value(1) = [];
+        end
     elseif isequal(class(value),'double')
         value = num2str(value);
     else
@@ -38,6 +45,9 @@ elseif isequal(init_unit,'nm') && isequal(fin_unit,'wavenumber')
     y = 10^7./value;
 elseif isequal(init_unit,'rad/s') && isequal(fin_unit,'wavenumber')
     y = (1/(200*pi*c))*value;
+elseif isequal(init_unit,'RGB') && isequal(fin_unit,'Hex')
+    value = round(255*value);
+    y = [dec2hex(value(1),2),dec2hex(value(2),2),dec2hex(value(3),2)];
 elseif isequal(init_unit,'wavenumber') && isequal(fin_unit,'Hertz')
     y = 100*c*value;
 elseif isequal(init_unit,'wavenumber') && isequal(fin_unit,'J')
