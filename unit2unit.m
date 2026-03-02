@@ -7,8 +7,8 @@ function y = unit2unit(value,init_unit,fin_unit)
 
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 % Created by: Benjamin Van Schaick
-% Date Modified: 2/26/2026
-% Version: 1.0.1
+% Date Modified: 3/2/2026
+% Version: 1.0.2
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 % Physical constants defined by SI
@@ -22,6 +22,16 @@ fin_unit = unitParse(fin_unit);
 % Perform the desired transformation
 if isequal(init_unit,'Hertz') && isequal(fin_unit,'wavenumber')
     y = (1/(100*c))*value;
+elseif isequal(init_unit,'Hex') && isequal(fin_unit,'RGB')
+    if isequal(class(value),'string')
+        value = char(value);
+    elseif isequal(class(value),'double')
+        value = num2str(value);
+    else
+        error(['The class of your hexadecimal color code must be character, string, or double. The class of your hex code is ',class(value),'.'])
+    end
+    value = [hex2dec(value(1:2)),hex2dec(value(3:4)),hex2dec(value(5:6))];
+    y = (1/255)*value;
 elseif isequal(init_unit,'J') && isequal(fin_unit,'wavenumber')
     y = (1/(100*h*c))*value;
 elseif isequal(init_unit,'nm') && isequal(fin_unit,'wavenumber')
@@ -48,6 +58,11 @@ function v = unitParse(u)
             v = 'Hertz';
             token_warning = 'frequency in Hertz';
         end
+    elseif isequal(u,'Hex') || isequal(u,'hex') || isequal(u,'Hex Code') || isequal(u,'HexCode') || isequal(u,'Hexadecimal') || isequal(u,'hexadecimal')
+        if ~isequal(u,'Hex')
+            v = 'Hex';
+            token_warning = 'color code in hexadecimal';
+        end
     elseif isequal(u,'J') || isequal(u,'Joules') || isequal(u,'joules')
         if ~isequal(u,'J')
             v = 'J';
@@ -62,6 +77,11 @@ function v = unitParse(u)
         if ~isequal(u,'rad/s')
             v = 'rad/s';
             token_warning = 'angular frequency in radians per second';
+        end
+    elseif isequal(u,'RGB') || isequal(u,'rgb')
+        if ~isequal(u,'RGB')
+            v = 'RGB';
+            token_warning = 'color code in RGB';
         end
     elseif isequal(u,'Wavelength') || isequal(u,'wavelength') || isequal(u,'nm')
         if ~isequal(u,'nm')
