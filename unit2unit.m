@@ -7,8 +7,8 @@ function y = unit2unit(value,init_unit,fin_unit)
 
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 % Created by: Benjamin Van Schaick
-% Date Modified: 3/2/2026
-% Version: 1.0.3
+% Date Modified: 3/10/2026
+% Version: 1.0.4
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 % Physical constants defined by SI
@@ -20,7 +20,13 @@ init_unit = unitParse(init_unit);
 fin_unit = unitParse(fin_unit);
 
 % Perform the desired transformation
-if isequal(init_unit,'Hertz') && isequal(fin_unit,'wavenumber')
+if isequal(init_unit,'eV') && isequal(fin_unit,'J')
+    y = 1.60218e-19*value;
+elseif isequal(init_unit,'eV') && isequal(fin_unit,'nm')
+    y = h*c*10^9./(value*1.60218e-19);
+elseif isequal(init_unit,'eV') && isequal(fin_unit,'wavenumber')
+    y = value*1.60218e-19/(h*100*c);
+elseif isequal(init_unit,'Hertz') && isequal(fin_unit,'wavenumber')
     y = (1/(100*c))*value;
 elseif isequal(init_unit,'Hex') && isequal(fin_unit,'RGB')
     if isequal(class(value),'char')
@@ -39,8 +45,12 @@ elseif isequal(init_unit,'Hex') && isequal(fin_unit,'RGB')
     end
     value = [hex2dec(value(1:2)),hex2dec(value(3:4)),hex2dec(value(5:6))];
     y = (1/255)*value;
+elseif isequal(init_unit,'J') && isequal(fin_unit,'eV')
+    y = value/1.60218e-19;
 elseif isequal(init_unit,'J') && isequal(fin_unit,'wavenumber')
     y = (1/(100*h*c))*value;
+elseif isequal(init_unit,'nm') && isequal(fin_unit,'eV')
+    y = h*c*10^9./(value*1.60218e-19);
 elseif isequal(init_unit,'nm') && isequal(fin_unit,'wavenumber')
     y = 10^7./value;
 elseif isequal(init_unit,'rad/s') && isequal(fin_unit,'wavenumber')
@@ -48,6 +58,8 @@ elseif isequal(init_unit,'rad/s') && isequal(fin_unit,'wavenumber')
 elseif isequal(init_unit,'RGB') && isequal(fin_unit,'Hex')
     value = round(255*value);
     y = [dec2hex(value(1),2),dec2hex(value(2),2),dec2hex(value(3),2)];
+elseif isequal(init_unit,'wavenumber') && isequal(fin_unit,'eV')
+    y = h*100*c*value/1.60218e-19;
 elseif isequal(init_unit,'wavenumber') && isequal(fin_unit,'Hertz')
     y = 100*c*value;
 elseif isequal(init_unit,'wavenumber') && isequal(fin_unit,'J')
@@ -63,7 +75,12 @@ end
 function v = unitParse(u)
     token_warning = 0;
     v = u;
-    if isequal(u,'Hertz') || isequal(u,'hertz') || isequal(u,'s^-1') || isequal(u,'s^(-1)') || isequal(u,'s^{-1}')
+    if isequal(u,'eV') || isequal(u,'electronvolts') || isequal(u,'electronvolt') || isequal(u,'ElectronVolts') || isequal(u,'ElectronVolt') || isequal(u,'ev')
+        if ~isequal(u,'eV')
+            v = 'eV';
+            token_warning = 'energy in eV';
+        end
+    elseif isequal(u,'Hertz') || isequal(u,'hertz') || isequal(u,'s^-1') || isequal(u,'s^(-1)') || isequal(u,'s^{-1}')
         if ~isequal(u,'Hertz')
             v = 'Hertz';
             token_warning = 'frequency in Hertz';
@@ -104,7 +121,7 @@ function v = unitParse(u)
             token_warning = 'wavenumber';
         end
     else
-        error('Initial unit not recognized. Verify that your units are supported')
+        error('Initial unit not recognized. Verify that your units are supported.')
     end
     if ~isequal(token_warning,0)
         warning(['Your unit (',u,') was taken to mean ',token_warning,' and was converted to the system standard.'])
