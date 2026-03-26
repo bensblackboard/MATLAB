@@ -7,8 +7,8 @@ function y = unit2unit(value,init_unit,fin_unit)
 
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 % Created by: Benjamin Van Schaick
-% Date Modified: 3/10/2026
-% Version: 1.0.4
+% Date Modified: 3/22/2026
+% Version: 1.0.5
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 % Physical constants defined by SI
@@ -66,6 +66,8 @@ elseif isequal(init_unit,'wavenumber') && isequal(fin_unit,'J')
     y = 100*h*c*value;
 elseif isequal(init_unit,'wavenumber') && isequal(fin_unit,'nm')
     y = 10^7./value;
+elseif isequal(init_unit,'wavenumber') && isequal(fin_unit,'nm^(-1)')
+    y = value*10e-7;
 elseif isequal(init_unit,'wavenumber') && isequal(fin_unit,'rad/s')
     y = 200*pi*c*value;
 else
@@ -99,6 +101,11 @@ function v = unitParse(u)
         if ~isequal(u,'um')
             v = 'um';
             token_warning = 'wavelength in micrometers';
+        end
+    elseif isequal(u,'nm^(-1)') || isequal(u,'nm^-1')
+        if ~isequal(u,'nm^(-1)')
+            v = 'nm^(-1)';
+            token_warning = 'wavenumber in inverse nanometers';
         end
     elseif isequal(u,'omega') || isequal(u,'rad/s') || isequal(u,'rad/sec')
         if ~isequal(u,'rad/s')
