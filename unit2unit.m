@@ -7,8 +7,8 @@ function y = unit2unit(value,init_unit,fin_unit)
 
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 % Created by: Benjamin Van Schaick
-% Date Modified: 3/22/2026
-% Version: 1.0.5
+% Date Modified: 4/22/2026
+% Version: 1.0.6
 % \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 % Physical constants defined by SI
@@ -26,6 +26,8 @@ elseif isequal(init_unit,'eV') && isequal(fin_unit,'nm')
     y = h*c*10^9./(value*1.60218e-19);
 elseif isequal(init_unit,'eV') && isequal(fin_unit,'wavenumber')
     y = value*1.60218e-19/(h*100*c);
+elseif isequal(init_unit,'Gauss') && isequal(fin_unit,'T')
+    y = value/10000;
 elseif isequal(init_unit,'Hertz') && isequal(fin_unit,'wavenumber')
     y = (1/(100*c))*value;
 elseif isequal(init_unit,'Hex') && isequal(fin_unit,'RGB')
@@ -58,6 +60,8 @@ elseif isequal(init_unit,'rad/s') && isequal(fin_unit,'wavenumber')
 elseif isequal(init_unit,'RGB') && isequal(fin_unit,'Hex')
     value = round(255*value);
     y = [dec2hex(value(1),2),dec2hex(value(2),2),dec2hex(value(3),2)];
+elseif isequal(init_unit,'T') && isequal(fin_unit,'Gauss')
+    y = value*10000;
 elseif isequal(init_unit,'wavenumber') && isequal(fin_unit,'eV')
     y = h*100*c*value/1.60218e-19;
 elseif isequal(init_unit,'wavenumber') && isequal(fin_unit,'Hertz')
@@ -81,6 +85,11 @@ function v = unitParse(u)
         if ~isequal(u,'eV')
             v = 'eV';
             token_warning = 'energy in eV';
+        end
+    elseif isequal(u,'Gauss') || isequal(u,'gauss')
+        if ~isequal(u,'Gauss')
+            v = 'Gauss';
+            token_warning = 'magnetic field strength in Gauss';
         end
     elseif isequal(u,'Hertz') || isequal(u,'hertz') || isequal(u,'s^-1') || isequal(u,'s^(-1)') || isequal(u,'s^{-1}')
         if ~isequal(u,'Hertz')
@@ -116,6 +125,11 @@ function v = unitParse(u)
         if ~isequal(u,'RGB')
             v = 'RGB';
             token_warning = 'color code in RGB';
+        end
+    elseif isequal(u,'Tesla') || isequal(u,'tesla') || isequal(u,'T')
+        if ~isequal(u,'T')
+            v = 'T';
+            token_warning = 'magnetic field strength in Tesla';
         end
     elseif isequal(u,'Wavelength') || isequal(u,'wavelength') || isequal(u,'nm')
         if ~isequal(u,'nm')
